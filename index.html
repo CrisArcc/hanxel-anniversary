@@ -1,0 +1,703 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hanxel and Me</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Manrope:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a sealed-envelope cover (photo frame, Happy 1st Anniversary, envelope) that opens into one soft-pink column: name, time together, message, photos, dates, song. Single light look on purpose. */
+:root {
+  --bg: #fff1f5;
+  --ink: #4b1f31;
+  --muted: #8f5972;
+  --rose: #c4264f;
+  --blush: #ffe1ea;
+  --card: rgba(255, 255, 255, 0.74);
+  --solid: #ffffff;
+  --line: #f6c6d5;
+  --btn-from: #dd4880;
+  --btn-to: #c12e62;
+  --btn-ink: #ffffff;
+  --shadow: 0 18px 40px -20px rgba(196, 38, 79, 0.4);
+  --scrim: rgba(58, 12, 32, 0.94);
+  --scrim-ink: #fff1f5;
+  --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --heart: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* background */
+.bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 40% at 12% 8%, #ffd6e4 0, transparent 70%),
+    radial-gradient(55% 40% at 92% 90%, #ffcadb 0, transparent 70%),
+    radial-gradient(45% 30% at 88% 12%, #ffffff 0, transparent 70%),
+    linear-gradient(#fff5f8, #ffe7ef);
+}
+.heart, .spark { position: absolute; }
+.heart {
+  -webkit-mask: var(--heart) center / contain no-repeat;
+  mask: var(--heart) center / contain no-repeat;
+  animation: drift var(--d, 9s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+.spark {
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  animation: twinkle var(--d, 4s) ease-in-out var(--delay, 0s) infinite alternate;
+}
+@keyframes drift { from { transform: translateY(0) rotate(-6deg); } to { transform: translateY(-16px) rotate(6deg); } }
+@keyframes twinkle { from { transform: scale(0.6); opacity: 0.35; } to { transform: scale(1.1); opacity: 1; } }
+
+.layer { position: relative; z-index: 1; }
+
+/* shared bits */
+.label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cta {
+  font: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--btn-ink);
+  background: linear-gradient(180deg, var(--btn-from), var(--btn-to));
+  border: 0;
+  padding: 14px 30px;
+  border-radius: 999px;
+  box-shadow: 0 14px 26px -12px rgba(196, 38, 79, 0.7);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.cta:hover { transform: translateY(-2px); }
+.cta:disabled { opacity: 0.7; cursor: default; transform: none; }
+.cta:focus-visible, .env:focus-visible, .ghost:focus-visible, a.btn:focus-visible, .shot:focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
+.ghost {
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--rose);
+  background: transparent;
+  border: 1.5px solid var(--rose);
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.ghost:hover { background: var(--rose); color: #fff; }
+
+/* cover */
+.cover {
+  min-height: calc(100svh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.cover.leaving { opacity: 0; transform: scale(0.96); }
+.frame-wrap { position: relative; width: min(190px, 48vw); margin-bottom: 6px; }
+.frame {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 6px solid #fff;
+  background: var(--blush);
+  box-shadow: 0 0 0 1px var(--line), 0 22px 44px -16px rgba(196, 38, 79, 0.5), 0 0 44px 8px rgba(255, 183, 208, 0.65);
+}
+.frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.sticker { position: absolute; aspect-ratio: 1; height: auto; filter: drop-shadow(0 4px 6px rgba(196, 38, 79, 0.3)); }
+.heart-ico { color: #ff5d8f; }
+.s1 { top: -16px; left: -20px; width: 38px; }
+.s2 { top: 36%; left: -26px; width: 30px; transform: rotate(-12deg); }
+.s3 { bottom: -14px; left: -14px; width: 42px; }
+.s4 { top: -10px; right: -14px; width: 26px; transform: rotate(14deg); }
+.s5 { bottom: -12px; right: -20px; width: 38px; transform: rotate(10deg); }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rose);
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+.pill svg { width: 14px; height: 14px; }
+.cover h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.3rem, 11vw, 4.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--rose);
+  text-wrap: balance;
+}
+.cover h1 em { font-style: italic; }
+.cover h1 sup { font-size: 0.42em; vertical-align: 0.85em; line-height: 0; }
+.tag {
+  max-width: 32ch;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1rem, 3.6vw, 1.2rem);
+  text-wrap: balance;
+}
+.sig { margin: 0; font-family: var(--font-display); font-style: italic; color: var(--rose); }
+
+/* envelope */
+.env-stage { padding-top: 34px; }
+.env {
+  position: relative;
+  display: block;
+  width: min(290px, 76vw);
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  filter: drop-shadow(0 16px 22px rgba(196, 38, 79, 0.3));
+}
+.env > span { position: absolute; display: block; }
+.env-back { inset: 0; background: #f2a0bb; border-radius: 10px; }
+.env-letter {
+  left: 7%;
+  right: 7%;
+  top: 10%;
+  bottom: 10%;
+  z-index: 2;
+  background: #fff;
+  border-radius: 6px;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding-top: 8px;
+  box-shadow: 0 2px 8px rgba(196, 38, 79, 0.18);
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s;
+}
+.l-for { font-size: 10px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); line-height: 1.4; }
+.l-name { font-family: var(--font-display); font-style: italic; font-size: 1.35rem; color: var(--rose); line-height: 1.2; }
+.env-front {
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(#f9c3d4, #f5adc4);
+  clip-path: polygon(0 0, 50% 54%, 100% 0, 100% 100%, 0 100%);
+  border-radius: 10px;
+}
+.env-flap {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 54%;
+  z-index: 4;
+  background: linear-gradient(#f594b3, #f08aab);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: 50% 0;
+  transform: perspective(700px) rotateX(0deg);
+  transition: transform 0.7s ease, opacity 0.3s ease 0.45s, z-index 0s linear 0.3s;
+}
+.env-seal {
+  left: 50%;
+  top: 54%;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff7aa3, #bf2c60);
+  display: grid !important;
+  place-items: center;
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(196, 38, 79, 0.45);
+  transition: opacity 0.3s ease, scale 0.3s ease;
+  animation: beat 2.2s ease-in-out infinite;
+}
+.env-seal svg { width: 18px; height: 18px; }
+@keyframes beat { 0%, 100% { scale: 1; } 50% { scale: 1.12; } }
+.env.open .env-letter { transform: translateY(-34%); }
+.env.open .env-flap { transform: perspective(700px) rotateX(180deg); z-index: 1; opacity: 0; }
+.env.open .env-seal { opacity: 0; scale: 0.5; animation: none; }
+
+/* site (after the envelope opens) */
+.site { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 52px; animation: rise 0.9s ease both; }
+.site:focus { outline: none; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+.m-hero { display: flex; flex-direction: column; gap: 10px; }
+.m-hero h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(4rem, 20vw, 8rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 0;
+  color: var(--rose);
+}
+.m-hero h1:focus { outline: none; }
+.lede { margin: 0; font-family: var(--font-display); font-style: italic; font-size: clamp(1.1rem, 4vw, 1.4rem); max-width: 30ch; text-wrap: balance; }
+.section { display: flex; flex-direction: column; gap: 18px; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.7rem, 6vw, 2.3rem); margin: 0; line-height: 1.15; color: var(--rose); text-wrap: balance; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--shadow);
+  padding: clamp(18px, 4.5vw, 32px);
+}
+
+/* time together */
+.clock { display: flex; flex-direction: column; gap: 12px; }
+.units { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.unit { display: flex; flex-direction: column; gap: 2px; }
+.unit + .unit { border-left: 1px solid var(--line); padding-left: clamp(8px, 3vw, 22px); }
+.num {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: clamp(1.6rem, 8vw, 3.2rem);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.unit:first-child .num { color: var(--rose); }
+.unit .label { font-size: 10px; }
+
+/* letter */
+.letter { display: flex; flex-direction: column; gap: 16px; }
+.letter p { margin: 0; max-width: 60ch; }
+.letter .closing { font-family: var(--font-display); font-style: italic; font-size: clamp(1.4rem, 5vw, 1.8rem); line-height: 1.3; color: var(--rose); }
+
+/* gallery */
+.hint { margin: 0; color: var(--muted); font-size: 14px; }
+.gallery { columns: 2; column-gap: 12px; }
+@media (min-width: 640px) { .gallery { columns: 3; } }
+.gallery .shot {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 6px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--solid);
+  box-shadow: 0 10px 22px -14px rgba(196, 38, 79, 0.5);
+  break-inside: avoid;
+  cursor: zoom-in;
+}
+.gallery .shot img { display: block; width: 100%; height: auto; border-radius: 12px; }
+
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--scrim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-block: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.lightbox img { max-width: 100%; max-height: calc(100% - 64px); object-fit: contain; border-radius: 10px; }
+.lb-bar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.lb-bar button {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--scrim-ink);
+  background: transparent;
+  border: 1px solid var(--scrim-ink);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.lb-bar button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.lb-count { align-self: center; color: var(--scrim-ink); font-family: var(--font-mono); font-size: 13px; }
+
+/* milestones */
+.ledger { list-style: none; margin: 0; padding: 0; }
+.ledger li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 16px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ledger li:first-child { padding-top: 0; }
+.ledger li:last-child { border-bottom: 0; padding-bottom: 0; }
+.ledger .what { font-weight: 600; }
+.ledger .when { grid-column: 1; color: var(--muted); font-size: 14px; font-family: var(--font-mono); }
+.pill-s {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.ledger li.done .pill-s { background: var(--blush); color: var(--rose); border-color: var(--blush); }
+.ledger li.next .pill-s { background: linear-gradient(180deg, var(--btn-from), var(--btn-to)); border-color: transparent; color: #fff; }
+.ledger li.next .what { color: var(--rose); }
+
+/* song */
+.song-card { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: center; justify-content: space-between; }
+.song-text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.song-title { font-family: var(--font-display); font-style: italic; font-size: clamp(2rem, 8vw, 3rem); line-height: 1.05; margin: 0; color: var(--rose); }
+.song-artist { margin: 0; color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* ask + footer */
+.ask { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.answer { font-family: var(--font-display); font-style: italic; font-size: clamp(1.5rem, 5vw, 2rem); margin: 0; color: var(--rose); }
+.foot { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .heart, .spark, .env-seal, .site { animation: none; }
+  .cover, .env-letter, .env-flap, .env-seal { transition-duration: 0.01s !important; transition-delay: 0s !important; }
+  .cta { transition: none; }
+  .cta:hover { transform: none; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-flower" viewBox="0 0 40 40">
+      <g transform="translate(20 20)" fill="#ff9dbd">
+        <ellipse cx="0" cy="-9" rx="6.5" ry="9.5"/>
+        <ellipse cx="0" cy="-9" rx="6.5" ry="9.5" transform="rotate(72)"/>
+        <ellipse cx="0" cy="-9" rx="6.5" ry="9.5" transform="rotate(144)"/>
+        <ellipse cx="0" cy="-9" rx="6.5" ry="9.5" transform="rotate(216)"/>
+        <ellipse cx="0" cy="-9" rx="6.5" ry="9.5" transform="rotate(288)"/>
+      </g>
+      <circle cx="20" cy="20" r="4.6" fill="#ffe27a"/>
+    </symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24">
+      <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="bg" id="bg" aria-hidden="true"></div>
+
+<div class="layer">
+  <section class="cover" id="cover" aria-labelledby="cover-title">
+    <div class="frame-wrap">
+      <div class="frame"><img src="photos/cover.jpg" alt="Hanxel and me, head to head" width="720" height="720"></div>
+      <svg class="sticker s1" viewBox="0 0 40 40" aria-hidden="true"><use href="#i-flower"/></svg>
+      <svg class="sticker s2 heart-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg>
+      <svg class="sticker s3" viewBox="0 0 40 40" aria-hidden="true"><use href="#i-flower"/></svg>
+      <svg class="sticker s4 heart-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg>
+      <svg class="sticker s5 heart-ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg>
+    </div>
+    <span class="pill">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#i-flower"/></svg>
+      Our 1st anniversary
+      <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#i-flower"/></svg>
+    </span>
+    <h1 id="cover-title">Happy 1<sup>st</sup> <em>Anniversary</em></h1>
+    <p class="tag">One year down, forever to go, babyyy. Something is waiting for you inside.</p>
+    <div class="env-stage">
+      <button class="env" id="env" type="button" aria-label="Open the envelope">
+        <span class="env-back"></span>
+        <span class="env-letter"><span class="l-for">For</span><span class="l-name">Hanxel</span></span>
+        <span class="env-front"></span>
+        <span class="env-flap"></span>
+        <span class="env-seal"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-heart"/></svg></span>
+      </button>
+    </div>
+    <button class="cta" id="open" type="button">Open it</button>
+    <p class="sig">You &amp; Me, Always.</p>
+  </section>
+
+  <main class="site" id="site" hidden tabindex="-1">
+    <header class="m-hero">
+      <span class="label">Nov 10, 2025 to Nov 10, 2026</span>
+      <h1 id="site-title">Hanxel</h1>
+      <p class="lede">Thank you for this first year, babyyy.</p>
+    </header>
+
+    <section class="card clock" aria-labelledby="tg-label">
+      <span class="label" id="tg-label">Together for</span>
+      <div class="units">
+        <div class="unit"><span class="num" id="tg-d">0</span><span class="label">days</span></div>
+        <div class="unit"><span class="num" id="tg-h">00</span><span class="label">hours</span></div>
+        <div class="unit"><span class="num" id="tg-m">00</span><span class="label">min</span></div>
+        <div class="unit"><span class="num" id="tg-s">00</span><span class="label">sec</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>For you</h2>
+      <div class="card letter">
+        <p>Hi Babyyy Happy 1st Anniversary first of all Im so grateful having you by my side and also im so thankful na umabot tayo ng ganto katagal i didn't expect between us, but like they said the unexpected us the best so thank you for all these year na kasama kita through up and downs kasi Kahit na alam mong hirap ako minsan sa ibang bagay Lalo na nung time na wala pakong trabaho is ikaw tong nanglilibre kaya thankful ako na ikaw ung nagging girlfriend ko, kaya ngayon na may trabaho na dn Ako babawi ako sayo pati kay zairo,</p>
+        <p>syempre d ko makakalimutan yang anak nating pusa, kasi sya dn ang nagging tulay sa mga bagay bagay kung bakit dn tayo nagtagal kasi meron tayong pusang inaalagaan,</p>
+        <p>anyways i want to thank you for everything, kasi Kahit anong away natin tayong dalawa pa dn ang magkakampi dto hindi tayo magkalaban kaya kung may problema ka please tell me because im happy to hear you yapping talk about chismis na na parang kala mo magkaibigan lng pero like they've said much better na dn tlaga na couple na at magbestfriend dn ang datingan HAHAHA.</p>
+        <p>how funny how we first met that we didn't even look each other na parang nadaan lng sa school Kahit kaibigan mo si cent nun tas dedma lng samin pepro ngayon tignan mo tayo going 1st anniversary natin babyyy</p>
+        <p class="closing">HAPPY 1st Anniversary Babyy i love you so much with all of my heart &lt;3</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="gal-title">
+      <h2 id="gal-title">Us, so far</h2>
+      <p class="hint">Tap a photo to see it bigger.</p>
+      <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section class="section">
+      <h2>The days that count</h2>
+      <div class="card"><ul class="ledger" id="ledger"></ul></div>
+    </section>
+
+    <section class="section">
+      <h2>Our song</h2>
+      <div class="card song-card">
+        <div class="song-text">
+          <span class="label">Now playing in my head</span>
+          <p class="song-title">About You</p>
+          <p class="song-artist">The 1975</p>
+        </div>
+        <div class="links">
+          <a class="ghost" href="https://open.spotify.com/search/About%20You%20The%201975" target="_blank" rel="noopener">Listen on Spotify</a>
+          <a class="ghost" href="https://www.youtube.com/results?search_query=The+1975+About+You" target="_blank" rel="noopener">Find on YouTube</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ask">
+      <button class="cta" id="again" type="button">Same time next year?</button>
+      <p class="answer" id="answer" hidden></p>
+    </section>
+
+    <footer class="foot">
+      <p class="sig">You &amp; Me, Always.</p>
+      <button class="ghost" id="close" type="button">Close the envelope</button>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var START = new Date(2025, 10, 10, 0, 0, 0);
+  var DAY = 864e5;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function $(id) { return document.getElementById(id); }
+  function pad(n) { return String(n).padStart(2, "0"); }
+  function fmt(d) { return d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); }
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+
+  /* floating hearts and sparkles */
+  (function () {
+    var bg = $("bg");
+    var pinks = ["#ff8fb3", "#ff6f9c", "#ffb3cb", "#f45d8c"];
+    var i, el, s;
+    for (i = 0; i < 20; i++) {
+      el = document.createElement("span");
+      el.className = "heart";
+      s = rnd(9, 24);
+      el.style.cssText = "left:" + rnd(0, 96) + "%;top:" + rnd(0, 96) + "%;width:" + s + "px;height:" + s + "px;background:" + pinks[i % pinks.length] + ";opacity:" + rnd(0.35, 0.8).toFixed(2) + ";--d:" + rnd(6, 12).toFixed(1) + "s;--delay:-" + rnd(0, 10).toFixed(1) + "s";
+      bg.appendChild(el);
+    }
+    for (i = 0; i < 16; i++) {
+      el = document.createElement("span");
+      el.className = "spark";
+      s = rnd(7, 15);
+      el.style.cssText = "left:" + rnd(0, 96) + "%;top:" + rnd(0, 96) + "%;width:" + s + "px;height:" + s + "px;background:" + (i % 2 ? "#ffffff" : "#ffc2d6") + ";--d:" + rnd(2.5, 5).toFixed(1) + "s;--delay:-" + rnd(0, 5).toFixed(1) + "s";
+      bg.appendChild(el);
+    }
+  })();
+
+  /* time together */
+  function set(prefix, ms) {
+    $(prefix + "-d").textContent = Math.floor(ms / DAY);
+    $(prefix + "-h").textContent = pad(Math.floor((ms % DAY) / 36e5));
+    $(prefix + "-m").textContent = pad(Math.floor((ms % 36e5) / 6e4));
+    $(prefix + "-s").textContent = pad(Math.floor((ms % 6e4) / 1e3));
+  }
+
+  var milestones = [
+    { what: "The first day", date: START },
+    { what: "100 days", date: new Date(2025, 10, 10 + 100) },
+    { what: "Six months", date: new Date(2026, 4, 10) },
+    { what: "200 days", date: new Date(2025, 10, 10 + 200) },
+    { what: "300 days", date: new Date(2025, 10, 10 + 300) },
+    { what: "One year", date: new Date(2026, 10, 10) }
+  ];
+
+  function renderLedger(now) {
+    var ul = $("ledger");
+    ul.innerHTML = "";
+    var nextFound = false;
+    milestones.forEach(function (m) {
+      var li = document.createElement("li");
+      var state = "later", text = "Ahead";
+      if (now >= m.date) { state = "done"; text = "Done"; }
+      else if (!nextFound) { state = "next"; text = "Next up"; nextFound = true; }
+      li.className = state;
+      var a = document.createElement("span"); a.className = "what"; a.textContent = m.what;
+      var b = document.createElement("span"); b.className = "when"; b.textContent = fmt(m.date);
+      var c = document.createElement("span"); c.className = "pill-s"; c.textContent = text;
+      li.appendChild(a); li.appendChild(b); li.appendChild(c);
+      ul.appendChild(li);
+    });
+  }
+
+  var lastDay = -1;
+  function tick() {
+    var now = new Date();
+    set("tg", Math.max(0, now - START));
+    if (now.getDate() !== lastDay) { lastDay = now.getDate(); renderLedger(now); }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* gallery + lightbox */
+  var PHOTOS = [];
+  for (var i = 1; i <= 18; i++) PHOTOS.push("photos/p" + pad(i) + ".jpg");
+  var gallery = $("gallery");
+  var lb = null, lbImg = null, lbCount = null, cur = 0, lastFocus = null;
+
+  PHOTOS.forEach(function (src, idx) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "shot";
+    btn.setAttribute("aria-label", "Open photo " + (idx + 1) + " of " + PHOTOS.length);
+    var img = document.createElement("img");
+    img.src = src;
+    img.alt = "Photo " + (idx + 1) + " of us";
+    img.loading = "lazy";
+    img.width = idx === PHOTOS.length - 1 ? 1100 : 825;
+    img.height = idx === PHOTOS.length - 1 ? 825 : 1100;
+    btn.appendChild(img);
+    btn.addEventListener("click", function () { openLb(idx); });
+    gallery.appendChild(btn);
+  });
+
+  function buildLb() {
+    lb = document.createElement("div");
+    lb.className = "lightbox";
+    lb.hidden = true;
+    lb.setAttribute("role", "dialog");
+    lb.setAttribute("aria-modal", "true");
+    lb.setAttribute("aria-label", "Photo viewer");
+    lbImg = document.createElement("img");
+    lbImg.alt = "";
+    var bar = document.createElement("div");
+    bar.className = "lb-bar";
+    function mk(text, fn, id) {
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = text; if (id) b.id = id;
+      b.addEventListener("click", function (e) { e.stopPropagation(); fn(); });
+      return b;
+    }
+    lbCount = document.createElement("span");
+    lbCount.className = "lb-count";
+    bar.appendChild(mk("Prev", function () { show(cur - 1); }));
+    bar.appendChild(lbCount);
+    bar.appendChild(mk("Next", function () { show(cur + 1); }));
+    bar.appendChild(mk("Close", closeLb, "lb-close"));
+    lb.appendChild(lbImg);
+    lb.appendChild(bar);
+    lb.addEventListener("click", function (e) { if (e.target === lb) closeLb(); });
+    document.body.appendChild(lb);
+  }
+  function show(n) {
+    cur = (n + PHOTOS.length) % PHOTOS.length;
+    lbImg.src = PHOTOS[cur];
+    lbImg.alt = "Photo " + (cur + 1) + " of us";
+    lbCount.textContent = (cur + 1) + " / " + PHOTOS.length;
+  }
+  function openLb(n) {
+    if (!lb) buildLb();
+    lastFocus = document.activeElement;
+    show(n);
+    lb.hidden = false;
+    $("lb-close").focus();
+  }
+  function closeLb() {
+    if (!lb) return;
+    lb.hidden = true;
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  document.addEventListener("keydown", function (e) {
+    if (!lb || lb.hidden) return;
+    if (e.key === "Escape") closeLb();
+    else if (e.key === "ArrowLeft") show(cur - 1);
+    else if (e.key === "ArrowRight") show(cur + 1);
+  });
+
+  /* next year answer */
+  $("again").addEventListener("click", function () {
+    var now = new Date();
+    var y = now.getFullYear();
+    var isDay = now.getMonth() === 10 && now.getDate() === 10;
+    var ay = (isDay || now < new Date(y, 10, 10)) ? y : y + 1;
+    var el = $("answer");
+    el.textContent = "Yes. November 10, " + (ay + 1) + ", and every one after.";
+    el.hidden = false;
+  });
+
+  /* envelope */
+  var cover = $("cover"), site = $("site"), env = $("env"), openBtn = $("open");
+  function openLetter() {
+    if (env.classList.contains("open")) return;
+    env.classList.add("open");
+    openBtn.disabled = true;
+    setTimeout(function () { cover.classList.add("leaving"); }, reduce ? 0 : 1700);
+    setTimeout(function () {
+      cover.hidden = true;
+      site.hidden = false;
+      window.scrollTo(0, 0);
+      try { site.focus({ preventScroll: true }); } catch (e) {}
+    }, reduce ? 0 : 2200);
+  }
+  function closeLetter() {
+    site.hidden = true;
+    cover.hidden = false;
+    cover.classList.remove("leaving");
+    env.classList.remove("open");
+    openBtn.disabled = false;
+    window.scrollTo(0, 0);
+    try { openBtn.focus({ preventScroll: true }); } catch (e) {}
+  }
+  env.addEventListener("click", openLetter);
+  openBtn.addEventListener("click", openLetter);
+  $("close").addEventListener("click", closeLetter);
+})();
+</script>
+
+</body></html>
